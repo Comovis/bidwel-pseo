@@ -1,0 +1,163 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { TenderCard } from '../../components/TenderCard';
+import { SocialProof } from '../../components/SocialProof';
+import { getAllPseoPaths, getTendersForPage } from '../../lib/data';
+import { formatValueForCard } from '../../utils/contractValue';
+
+// 1. Generate all 6,000+ paths at build time
+export async function getStaticPaths() {
+  const paths = await getAllPseoPaths();
+  return paths;
+}
+
+const { pageParams, stats } = Astro.props; // stats is the pre-fetched count from view
+const tenders = await getTendersForPage(pageParams);
+
+// Top 3 visible, rest gated
+const visibleTenders = tenders.slice(0, 3);
+const gatedCount = Math.max(0, stats.count - 3);
+
+// Dynamic Content Helpers
+const formatTitle = (p: any) => {
+    switch(p.type) {
+        case 'industry-location': return `${p.industry} Tenders in ${p.location}`;
+        case 'service-location': return `${p.service} Tenders in ${p.location}`;
+        case 'code-location': return `CPV ${p.cpv_code} Tenders in ${p.location}`;
+        case 'buyer-industry': return `${p.buyer} - ${p.industry} Tenders`;
+        case 'buyer-location-industry': return `${p.buyer} - ${p.industry} Tenders in ${p.location}`;
+        case 'sme-industry-location': return `SME-Friendly ${p.industry} Tenders in ${p.location}`;
+        default: return 'Tenders';
+    }
+}
+
+const formatH1 = (p: any, count: number) => {
+    return `${count} Live ${formatTitle(p)}`;
+}
+
+const title = formatTitle(pageParams);
+const h1 = formatH1(pageParams, stats.count);
+
+// Calculate total value of top results as a proxy
+const approxTotalValue = tenders.reduce((acc, t) => {
+    const val = typeof t.value === 'number' ? t.value : 0;
+    return acc + val;
+}, 0);
+const avgValue = tenders.length > 0 ? approxTotalValue / tenders.length : 0;
+
+// Dynamic meta description
+const metaDesc = `Browse ${stats.count} active procurement opportunities for ${title}. Total value approx ${formatValueForCard(approxTotalValue)}. Free AI bid writer.`;
+
+---
+
+<Layout title={title} description={metaDesc}>
+	
+	<!-- Breadcrumbs (Simplified) -->
+	<nav class="flex mb-6 text-sm text-gray-500" aria-label="Breadcrumb">
+		<ol class="inline-flex items-center space-x-2">
+			<li><a href="/" class="hover:text-gray-700">Home</a></li>
+			<li><span>/</span></li>
+			<li><a href="/tenders" class="hover:text-gray-700">UK Tenders</a></li>
+			<li><span>/</span></li>
+			<li class="text-gray-900 font-medium truncate max-w-[200px]">{title}</li>
+		</ol>
+	</nav>
+
+	<!-- Hero Section (Simplified to match App) -->
+	<div class="mb-8 border-b border-gray-200 pb-8">
+		<h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 tracking-tight">
+			{h1}
+		</h1>
+		<p class="text-base text-gray-500 max-w-3xl leading-relaxed">
+			Found <span class="font-semibold text-gray-900">{stats.count}</span> active opportunities matching your criteria. 
+            <span class="inline-block mt-2 md:mt-0 md:ml-1 bg-blue-50 text-blue-800 px-2 py-0.5 rounded-md font-medium text-sm border border-blue-100">
+			    Use Bidwel's AI to analyse these contracts and draft winning proposals.
+            </span>
+		</p>
+	</div>
+
+	<!-- Tender List -->
+	<div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Current UK Tender Opportunities</h2>
+            <div class="w-full md:w-auto">
+                <SocialProof client:idle />
+            </div>
+        </div>
+		
+		<div class="flex flex-col gap-4">
+			{visibleTenders.map((tender) => (
+				<TenderCard tender={tender} />
+			))}
+		</div>
+
+		<!-- Gated Overlay -->
+		{gatedCount > 0 && (
+			<div class="relative mt-4">
+				<div class="opacity-40 blur-sm pointer-events-none select-none flex flex-col gap-4">
+					<!-- Fake blurred cards -->
+					<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-48"></div>
+					<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-48"></div>
+				</div>
+				
+				<div class="absolute inset-0 flex items-center justify-center">
+					<div class="bg-white rounded-xl shadow-xl border border-gray-200 p-8 max-w-md text-center z-10 m-4">
+						<div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+							<svg class="w-8 h-8 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+							</svg>
+						</div>
+						<h3 class="text-2xl font-bold text-gray-900 mb-2">
+							🔓 Unlock {gatedCount} More Tenders
+						</h3>
+						<p class="text-gray-600 mb-6">
+							Create a free account to view the full list, access detailed specifications, and use our AI bid writer.
+						</p>
+						<a href="https://bidwel.com/signup" class="block w-full bg-blue-900 text-white px-6 py-3 rounded-lg text-base font-semibold hover:bg-blue-800 transition-colors shadow-md mb-3">
+							Sign Up Free — No Credit Card
+						</a>
+						<p class="text-xs text-gray-500">
+							✓ Join 5,000+ companies winning government contracts
+						</p>
+					</div>
+				</div>
+			</div>
+		)}
+	</div>
+
+	<!-- Bottom CTA -->
+	<div class="relative rounded-2xl overflow-hidden shadow-2xl">
+        <div class="absolute inset-0 bg-gray-900">
+             <div class="absolute inset-0 bg-gradient-to-br from-blue-900/50 to-purple-900/50 mix-blend-overlay"></div>
+             <!-- Abstract Pattern -->
+             <svg class="absolute inset-0 h-full w-full opacity-10" width="100%" height="100%">
+                <pattern id="pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1" class="text-white" fill="currentColor"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#pattern)"/>
+             </svg>
+        </div>
+        
+        <div class="relative px-6 py-12 md:py-16 md:px-12 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="max-w-xl">
+                 <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+                    Ready to Win More {title}?
+                </h2>
+                <p class="text-lg text-blue-100 mb-0 leading-relaxed">
+                    Stop manually searching. Join thousands of businesses using Bidwel's AI to find and apply for contracts 10x faster.
+                </p>
+            </div>
+            
+            <div class="flex flex-col gap-3 w-full md:w-auto min-w-[200px]">
+                <a href="https://bidwel.com/signup" class="inline-flex items-center justify-center bg-white text-gray-900 px-8 py-4 rounded-xl text-base font-bold hover:bg-blue-50 transition-all transform hover:scale-105 shadow-lg">
+                    Start Free Trial
+                    <svg class="ml-2 w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+                <p class="text-xs text-center text-gray-400">
+			        No credit card required
+		        </p>
+            </div>
+        </div>
+	</div>
+
+</Layout>

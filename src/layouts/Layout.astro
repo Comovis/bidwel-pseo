@@ -1,0 +1,180 @@
+---
+import { SocialProofToast } from '../components/SocialProofToast';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = "Browse active government tenders and procurement opportunities." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | Bidwel</title>
+		
+		<!-- Google tag (gtag.js) -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-0K1ZMSKFY4"></script>
+		<script is:inline>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+		
+		  gtag('config', 'G-0K1ZMSKFY4');
+		</script>
+		
+		<!-- Open Graph -->
+		<meta property="og:title" content={`${title} | Bidwel`} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
+		
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="/src/styles/global.css" />
+	</head>
+	<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+		
+		<!-- Header -->
+		<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div class="flex justify-between h-16 items-center">
+					<!-- Logo -->
+					<div class="flex items-center cursor-pointer">
+						<a href="https://bidwel.com" class="flex items-center">
+							<img
+								src="https://cyxtfpxloavxhmhdzgnc.supabase.co/storage/v1/object/public/logos/BidwellMainLogoSVGDark.svg"
+								alt="Bidwel"
+								class="h-8"
+							/>
+						</a>
+					</div>
+					
+					<!-- Nav -->
+					<div class="flex items-center space-x-6">
+						<a href="https://bidwel.com" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors hidden sm:block">
+							View Platform
+						</a>
+						<a href="https://bidwel.com/pricing" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors hidden sm:block">
+							Pricing
+						</a>
+						<div class="h-6 w-px bg-gray-200 hidden sm:block"></div>
+						<a href="https://bidwel.com/login" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+							Log in
+						</a>
+						<a href="https://bidwel.com/signup" class="bg-blue-900 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-800 transition-colors shadow-sm">
+							Start Free Trial
+						</a>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<!-- Main Content -->
+		<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[calc(100vh-4rem-20rem)]">
+			<slot />
+		</main>
+
+		<!-- Footer -->
+		<footer class="bg-[#fafbfc] border-t border-gray-100 mt-16">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+                <div class="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-12">
+                    <!-- Brand Column -->
+                    <div class="col-span-2">
+                        <div class="mb-4">
+                            <img src="https://cyxtfpxloavxhmhdzgnc.supabase.co/storage/v1/object/public/logos/BidwellMainLogoSVGDark.svg" alt="Bidwel" class="h-7" />
+                        </div>
+                        <p class="text-sm text-gray-500 mb-6 leading-relaxed max-w-[240px]">
+                            Win more government contracts with AI-powered bid writing.
+                        </p>
+
+                        <!-- Social Links -->
+                        <div class="flex items-center gap-3 mb-8">
+                            <a href="https://twitter.com/bidwel" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="X (Twitter)">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                            </a>
+                            <a href="https://linkedin.com/company/bidwel" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-gray-600 transition-colors" aria-label="LinkedIn">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Popular Tenders -->
+                    <div class="col-span-1">
+                        <h3 class="text-gray-900 font-medium text-sm mb-4">Popular Tenders</h3>
+                        <ul class="space-y-3">
+                            <li><a href="/tenders/construction/uk" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Construction</a></li>
+                            <li><a href="/tenders/healthcare/uk" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Healthcare</a></li>
+                            <li><a href="/tenders/it-services/uk" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">IT Services</a></li>
+                            <li><a href="/tenders/education/uk" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Education</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Locations -->
+                    <div class="col-span-1">
+                         <h3 class="text-gray-900 font-medium text-sm mb-4">Top Locations</h3>
+                        <ul class="space-y-3">
+                            <li><a href="https://bidwel.com/tenders/london" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">London</a></li>
+                            <li><a href="https://bidwel.com/tenders/manchester" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Manchester</a></li>
+                            <li><a href="https://bidwel.com/tenders/birmingham" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Birmingham</a></li>
+                            <li><a href="https://bidwel.com/tenders/leeds" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Leeds</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Product -->
+                    <div class="col-span-1">
+                        <h3 class="text-gray-900 font-medium text-sm mb-4">Product</h3>
+                        <ul class="space-y-3">
+                             <li><a href="https://bidwel.com/?utm_source=bidwel_pseo&utm_medium=referral" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Find Tenders</a></li>
+                             <li><a href="https://bidwel.com/ai-writer?utm_source=bidwel_pseo&utm_medium=referral" class="text-sm text-gray-500 hover:text-gray-900 transition-colors inline-flex items-center gap-2">AI Bid Writer <span class="px-1.5 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-medium rounded">New</span></a></li>
+                             <li><a href="https://bidwel.com/knowledge?utm_source=bidwel_pseo&utm_medium=referral" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Knowledge Vault</a></li>
+                             <li><a href="https://bidwel.com/team?utm_source=bidwel_pseo&utm_medium=referral" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Team</a></li>
+                             <li><a href="https://bidwel.com/pricing?utm_source=bidwel_pseo&utm_medium=referral" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Pricing</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-100">
+                <div class="max-w-7xl mx-auto px-6 lg:px-8 py-5">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <p class="text-sm text-gray-400">
+                            © {new Date().getFullYear()} Bidwel. All rights reserved.
+                        </p>
+                        <nav class="hidden md:flex items-center gap-8">
+                            <a href="https://bidwel.com/pricing?utm_source=bidwel_pseo&utm_medium=referral" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
+                            <a href="https://bidwel.com/?utm_source=bidwel_pseo&utm_medium=referral" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">View Platform</a>
+                        </nav>
+                        <div class="flex items-center gap-6">
+                            <a href="https://bidwel.com/privacy" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">Privacy Policy</a>
+                            <a href="https://bidwel.com/terms" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">Terms</a>
+                            <a href="https://bidwel.com/cookies" class="text-sm text-gray-400 hover:text-gray-600 transition-colors">Cookie Policy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</footer>
+    
+    <!-- Social Proof Toast -->
+    <SocialProofToast client:idle />
+	</body>
+</html>
+
+<style is:global>
+	/* Global styles from index.css */
+	:root {
+		--font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	}
+	html {
+		font-family: var(--font-sans);
+	}
+</style>

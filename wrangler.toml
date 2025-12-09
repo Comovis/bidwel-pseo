@@ -1,0 +1,32 @@
+name = "bidwel-tenders-router"
+main = "cloudflare-worker.js"
+compatibility_date = "2024-12-08"
+
+# ----------------------------------------------------
+# Route Configuration
+# Intercepts /tenders/ and /_astro/ to serve from Worker
+# ----------------------------------------------------
+
+# --- ROOT DOMAIN (bidwel.com) ---
+
+# Route 1: Content pages
+[[routes]]
+pattern = "bidwel.com/tenders/*"
+zone_name = "bidwel.com"
+
+# Route 2: Static assets (scripts & styles)
+[[routes]]
+pattern = "bidwel.com/_astro/*"
+zone_name = "bidwel.com"
+
+# --- WWW SUBDOMAIN (www.bidwel.com) ---
+
+# Route 3: Content pages (www)
+[[routes]]
+pattern = "www.bidwel.com/tenders/*"
+zone_name = "bidwel.com"
+
+# Route 4: Static assets (www)
+[[routes]]
+pattern = "www.bidwel.com/_astro/*"
+zone_name = "bidwel.com"

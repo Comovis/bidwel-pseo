@@ -37,17 +37,40 @@ export async function getTopPseoPages(limit = 5) {
 }
 
 export async function getAllPseoPaths() {
-    // Fetch all pre-calculated pages from the View
-    const { data, error } = await supabase
-        .from('pseo_page_index')
-        .select('slug_path, params, tender_count');
+    let allPages: any[] = [];
+    let from = 0;
+    const batchSize = 1000;
 
-    if (error) {
-        console.error('Error fetching pSEO paths:', error);
-        return [];
+    // Loop until we get fewer items than requested (meaning we hit the end)
+    while (true) {
+        const { data, error } = await supabase
+            .from('pseo_page_index')
+            .select('slug_path, params, tender_count')
+            .range(from, from + batchSize - 1);
+
+        if (error) {
+            console.error('Error fetching pSEO paths:', error);
+            // If we have some data, return what we have? Or break? 
+            // Better to break and show partial than fail completely, or throw?
+            // Let's break for now.
+            break;
+        }
+
+        if (!data || data.length === 0) {
+            break;
+        }
+
+        allPages = allPages.concat(data);
+
+        // If we got fewer than batchSize, we are done
+        if (data.length < batchSize) {
+            break;
+        }
+
+        from += batchSize;
     }
 
-    return data.map((page: any) => ({
+    return allPages.map((page: any) => ({
         params: { slug: page.slug_path },
         props: {
             pageParams: page.params,

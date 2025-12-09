@@ -9,24 +9,26 @@
  */
 
 export default {
-    async fetch(request, env) {
+    async fetch(request, env, ctx) {
         const url = new URL(request.url);
 
-        // This worker only handles /tenders/* requests
-        // Construct the Cloudflare Pages URL
-        const pagesUrl = new URL(url.pathname + url.search, 'https://bidwel-pseo.pages.dev');
+        // Handle /tenders/*, /_astro/* AND sitemap requests
+        if (!url.pathname.startsWith('/tenders') &&
+            !url.pathname.startsWith('/_astro') &&
+            !url.pathname.startsWith('/sitemap-index.xml') &&
+            !url.pathname.match(/\/sitemap-\d+\.xml/)) {
+            return fetch(request);
+        }
 
-        // Prepare headers: Remove the original 'Host' header to prevent 
-        // "Misdirected Request" errors when fetching the Pages domain.
-        const newHeaders = new Headers(request.headers);
-        newHeaders.delete('Host');
+        // Target Cloudflare Pages URL
+        const targetUrl = `https://bidwel-pseo.pages.dev${url.pathname}${url.search}`;
 
-        // Fetch from Cloudflare Pages
-        return fetch(pagesUrl, {
+        // Fetch from Pages
+        const response = await fetch(targetUrl, {
             method: request.method,
-            headers: newHeaders,
-            body: request.body,
-            redirect: 'manual',
+            headers: request.headers,
         });
+
+        return response;
     }
 };

@@ -118,6 +118,12 @@ export async function getTendersForPage(params: any): Promise<Tender[]> {
         query = query.eq('is_sme_friendly', true);
     }
 
+    if (params.keyword) {
+        // Supabase/PostgREST syntax for array contains: cs (contains)
+        // Equivalent to SQL: keywords @> '{value}'
+        query = query.contains('keywords', [params.keyword]);
+    }
+
     const { data, error } = await query;
 
     if (error) {

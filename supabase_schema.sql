@@ -161,6 +161,39 @@ WITH raw_pages AS (
     WHERE stage = 'tender' AND array_length(cpv_code, 1) > 0
     GROUP BY stage, cpv_code[1], coalesce(location, region, 'uk')
     HAVING count(*) > 0
+    UNION ALL
+
+    -- I. Region Only
+    -- Path: /tenders/region/[region]
+    SELECT 
+        'region-only' as page_type,
+        'region/' || slugify(coalesce(location, region, 'uk')) as slug_path,
+        jsonb_build_object(
+            'type', 'region-only',
+            'location', coalesce(location, region, 'uk')
+        ) as params,
+        count(*) as tender_count
+    FROM uk_tenders
+    WHERE stage = 'tender' AND coalesce(location, region) IS NOT NULL
+    GROUP BY coalesce(location, region, 'uk')
+    HAVING count(*) > 0
+
+    UNION ALL
+
+    -- J. Topic (Keyword)
+    -- Path: /tenders/topic/[keyword-slug]
+    SELECT 
+        'topic' as page_type,
+        'topic/' || slugify(keyword) as slug_path,
+        jsonb_build_object(
+            'type', 'topic',
+            'keyword', keyword
+        ) as params,
+        count(*) as tender_count
+    FROM uk_tenders, unnest(keywords) as keyword
+    WHERE stage = 'tender' AND length(keyword) > 2
+    GROUP BY keyword
+    HAVING count(*) >= 3
 )
 
 -- Fix: Wrap in query with DISTINCT ON to prevent Unique Key Violation

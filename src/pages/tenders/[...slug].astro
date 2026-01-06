@@ -27,6 +27,8 @@ const formatTitle = (p: any) => {
         case 'buyer-industry': return `${p.buyer} - ${p.industry} Tenders`;
         case 'buyer-location-industry': return `${p.buyer} - ${p.industry} Tenders in ${p.location}`;
         case 'sme-industry-location': return `SME-Friendly ${p.industry} Tenders in ${p.location}`;
+        case 'region-only': return `Public Sector Tenders in ${p.location}`;
+        case 'topic': return `${p.keyword} Tenders`;
         default: return 'Tenders';
     }
 }
@@ -46,7 +48,15 @@ const approxTotalValue = tenders.reduce((acc, t) => {
 const avgValue = tenders.length > 0 ? approxTotalValue / tenders.length : 0;
 
 // Dynamic meta description
-const metaDesc = `Browse ${stats.count} active procurement opportunities for ${title}. Total value approx ${formatValueForCard(approxTotalValue)}. Free AI bid writer.`;
+const metaDesc = (() => {
+    if (pageParams.type === 'region-only') {
+        return `View all active public sector tenders in ${pageParams.location}. Bidwel aggregates contract notices from local councils, NHS trusts, and government bodies in ${pageParams.location}.`;
+    }
+    if (pageParams.type === 'topic') {
+        return `Find the latest ${pageParams.keyword} tenders and contracts. We are tracking ${stats.count} active opportunities for ${pageParams.keyword}. Use AI to write your bid.`;
+    }
+    return `Browse ${stats.count} active procurement opportunities for ${title}. Total value approx ${formatValueForCard(approxTotalValue)}. Free AI bid writer.`;
+})();
 
 ---
 
